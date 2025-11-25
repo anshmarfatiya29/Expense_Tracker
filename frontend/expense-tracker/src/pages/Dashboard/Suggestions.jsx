@@ -1,7 +1,7 @@
 // A:\Expense Tracker\frontend\expense-tracker\src\pages\Dashboard\Suggestions.jsx
 
 import React, { useState, useContext } from "react"; // 👈 Import useContext
-import { UserContext } from "../../context/userContext"; // 👈 Import UserContext
+import { UserContext } from "../../context/UserContext"; // 👈 Import UserContext
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { useUserAuth } from "../../hooks/useUserAuth";
 import axiosInstance from "../../utils/axiosInstance";
