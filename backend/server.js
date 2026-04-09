@@ -13,6 +13,14 @@ const suggestionRoutes = require("./routes/suggestionRoutes");
 
 const app = express();
 
+
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://expense-tracker-79wt.onrender.com"
+  ],
+  credentials: true
+}));
 // --- Middleware ---
 
 // CORS Configuration
