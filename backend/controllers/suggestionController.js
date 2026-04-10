@@ -3,26 +3,21 @@ require("dotenv").config();
 
 const Income = require("../models/Income");
 const Expense = require("../models/Expense");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 
 // ---------------- Gemini Helper ----------------
 
-// Default model: env se lo, warna gemini-flash-latest use karo
-const DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-pro";
+// ---------------- Gemini Helper (NEW SDK) ----------------
 
-// Helper: safely get Gemini model (can be null if key missing)
-const getGeminiModel = () => {
+const getGeminiAI = () => {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
-    console.warn("⚠ GEMINI_API_KEY is missing. Falling back to static suggestions.");
+    console.warn("⚠ GEMINI_API_KEY missing");
     return null;
   }
 
-  console.log("Using Gemini model:", DEFAULT_GEMINI_MODEL);
-
-  const genAI = new GoogleGenerativeAI(apiKey);
-  return genAI.getGenerativeModel({ model: DEFAULT_GEMINI_MODEL });
+  return new GoogleGenAI({ apiKey });
 };
 
 // --- Budget Suggestion Controller ---
@@ -55,9 +50,9 @@ exports.getBudgetSuggestion = async (req, res) => {
       .join(", ");
 
     // 3. Try to use Gemini if available
-    const model = getGeminiModel();
+    const ai = getGeminiAI();
 
-    if (!model) {
+    if (!ai) {
       // No API key → fallback suggestion
       return res.status(200).json({
         suggestion: `Here’s a basic budget tip based on your last 30 days:\n\n- Focus on the categories where you're spending the most.\n- Try to cut 5–10% from high-spend areas like ${Object.keys(
@@ -76,9 +71,12 @@ exports.getBudgetSuggestion = async (req, res) => {
     `;
 
     try {
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const suggestionText = response.text();
+      const result = await ai.models.generateContent({
+  model: "gemini-1.5-flash",
+  contents: prompt,
+});
+
+const suggestionText = result.text;
 
       return res.status(200).json({ suggestion: suggestionText });
     } catch (aiError) {
@@ -142,9 +140,9 @@ exports.getIncomeGrowthSuggestion = async (req, res) => {
       });
     }
 
-    const model = getGeminiModel();
+    const ai = getGeminiAI();
 
-    if (!model) {
+    if (!ai) {
       // No API key → basic income-growth suggestion
       return res.status(200).json({
         suggestion: `You saved about ₹${savings.toFixed(
@@ -164,9 +162,12 @@ exports.getIncomeGrowthSuggestion = async (req, res) => {
     `;
 
     try {
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const suggestionText = response.text();
+      const result = await ai.models.generateContent({
+  model: "gemini-1.5-flash",
+  contents: prompt,
+});
+
+const suggestionText = result.text;
 
       return res.status(200).json({ suggestion: suggestionText });
     } catch (aiError) {
