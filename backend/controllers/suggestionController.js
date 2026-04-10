@@ -8,7 +8,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 // ---------------- Gemini Helper ----------------
 
 // Default model: env se lo, warna gemini-flash-latest use karo
-const DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
+const DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-pro";
 
 // Helper: safely get Gemini model (can be null if key missing)
 const getGeminiModel = () => {
